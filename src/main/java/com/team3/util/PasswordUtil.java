@@ -13,7 +13,8 @@ public class PasswordUtil {
         return BCrypt.checkpw(password, hashedPassword);
     }
     
-    
+
+
     
 /*hashPassword()
     Takes the user's normal password.
