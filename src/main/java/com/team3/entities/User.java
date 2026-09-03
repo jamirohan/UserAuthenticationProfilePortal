@@ -7,17 +7,15 @@ public class User {
     private String fullName;
     private String email;
     private String passwordHash;
-    private String role;
     private LocalDateTime createdAt;
     
 //    constructors
-	public User(long userId, String fullName, String email, String passwordHash, String role, LocalDateTime createdAt) {
+	public User(long userId, String fullName, String email, String passwordHash, LocalDateTime createdAt) {
 		super();
 		this.userId = userId;
 		this.fullName = fullName;
 		this.email = email;
 		this.passwordHash = passwordHash;
-		this.role = role;
 		this.createdAt = createdAt;		
 	    }
 	
@@ -54,13 +52,6 @@ public class User {
 		this.passwordHash = passwordHash;
 	}
 
-	public String getRole() {
-		return role;
-	}
-
-	public void setRole(String role) {
-		this.role = role;
-	}
 
 	public LocalDateTime getCreatedAt() {
 		return createdAt;

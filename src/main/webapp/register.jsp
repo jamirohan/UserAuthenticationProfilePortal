@@ -7,6 +7,6 @@
 <title>register</title>
 </head>
 <body>
-<h1>register Page</h1>
+<h1>PRUTHVI ELLA UNNAVVV</h1>
 </body>
 </html>
