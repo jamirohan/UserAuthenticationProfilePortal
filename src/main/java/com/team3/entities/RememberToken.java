@@ -8,6 +8,9 @@ public class RememberToken {
 	    private String tokenValue;
 	    private LocalDateTime expiresAt;
 	    private long userId;
+	    
+	    public RememberToken() {
+	    }
 		
 //	    constructors
 	    public RememberToken(long tokenId, String tokenValue, LocalDateTime expiresAt, long userId) {

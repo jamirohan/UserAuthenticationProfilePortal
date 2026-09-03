@@ -7,6 +7,11 @@ public class UserSession {
     private LocalDateTime loginTime;
     private LocalDateTime expiryTime;
     private long userId;
+    
+    
+    public UserSession() {
+    }
+    
 	
 //    constructors
     public UserSession(String sessionId, LocalDateTime loginTime, LocalDateTime expiryTime, long userId) {

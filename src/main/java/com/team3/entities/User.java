@@ -9,6 +9,9 @@ public class User {
     private String passwordHash;
     private LocalDateTime createdAt;
     
+    public User() {
+    }
+    
 //    constructors
 	public User(long userId, String fullName, String email, String passwordHash, LocalDateTime createdAt) {
 		super();
