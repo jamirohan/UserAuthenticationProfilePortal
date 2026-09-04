@@ -36,7 +36,8 @@ public class RememberTokenDAO {
 	}
 	
 	
-	
+/*	findToken() searches the REMEMBER_TOKEN table using the token value.
+	This will later allow the AuthFilter to check whether a Remember Me token is valid.*/
 
 	public RememberToken findToken(String tokenValue) {
 
@@ -73,7 +74,7 @@ public class RememberTokenDAO {
 
 	
 	
-	
+//	This helps prevent an old Remember Me token from being reused after logout.
 	public boolean deleteToken(String tokenValue) {
 
 	    String sql = "DELETE FROM remember_token WHERE token_value = ?";

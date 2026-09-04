@@ -7,11 +7,11 @@ import java.sql.SQLException;
 public class DBConnection {
 
     private static final String URL =
-            "jdbc:oracle:thin:@localhost:1521/FREEPDB1";
+            "jdbc:oracle:thin:@localhost:1521/FREE";
 
-    private static final String USERNAME = "SYSTEM";
+    private static final String USERNAME = "C##itcuser";
 
-    private static final String PASSWORD = "Team3project";
+    private static final String PASSWORD = "itcuser";
 
     public static Connection getConnection() {
 
