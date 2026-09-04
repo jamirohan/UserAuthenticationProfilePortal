@@ -1,5 +1,6 @@
 package com.team3.service;
 
+import com.team3.util.PasswordUtil;
 import com.team3.dao.UserDAO;
 import com.team3.entities.User;
 
@@ -7,16 +8,25 @@ public class AuthenticationService {
 	
 	private UserDAO userDAO = new UserDAO();
 
-    public User login(String email, String password) {
-        User user = userDAO.findUserByEmail(email);
+	public User login(String email, String password) {
 
-        if (user != null) {
-            // Password verification will be added later
-            return user;
-        }
+	    User user = userDAO.findUserByEmail(email);
 
-        return null;
-    }
+	    if (user != null) {
+
+	        boolean passwordCorrect =
+	                PasswordUtil.verifyPassword(
+	                        password,
+	                        user.getPasswordHash()
+	                );
+
+	        if (passwordCorrect) {
+	            return user;
+	        }
+	    }
+
+	    return null;
+	}
 
     public boolean logout(String sessionId) {
         // Logout logic will be added later

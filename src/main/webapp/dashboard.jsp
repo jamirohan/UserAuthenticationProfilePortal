@@ -1,12 +1,29 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+
+<%@ page import="com.team3.entities.User" %>
+
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
 </head>
+
 <body>
-<h1>dashboard Page</h1>
+
+<%
+    User user = (User) session.getAttribute("user");
+
+    if (user == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
+
+    <h1>Welcome, <%= user.getFullName() %>!</h1>
+
+    <p>You are successfully logged in.</p>
+
 </body>
 </html>
