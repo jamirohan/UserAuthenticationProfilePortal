@@ -7,15 +7,17 @@ import java.sql.SQLException;
 public class DBConnection {
 
     private static final String URL =
-            "jdbc:oracle:thin:@localhost:1521/FREE";
+            "jdbc:oracle:thin:@localhost:1521/FREEPDB1";
 
-    private static final String USERNAME = "C##itcuser";
+    private static final String USERNAME = "SYSTEM";
 
-    private static final String PASSWORD = "itcuser";
+    private static final String PASSWORD = "Team3project";
 
     public static Connection getConnection() {
 
         try {
+        	Class.forName("oracle.jdbc.OracleDriver");
+
             Connection connection =
                     DriverManager.getConnection(URL, USERNAME, PASSWORD);
 
@@ -23,12 +25,12 @@ public class DBConnection {
 
             return connection;
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
 
             System.out.println("Database connection failed!");
             e.printStackTrace();
 
-            return null;
+            throw new RuntimeException("Unable to connect to Oracle database", e);
         }
     }
 }
