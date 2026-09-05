@@ -44,34 +44,46 @@ public class RegisterServlet extends HttpServlet {
 	    String fullName = request.getParameter("fullName");
 	    String email = request.getParameter("email");
 	    String password = request.getParameter("password");
-	    
+
 	    if (fullName == null || fullName.trim().isEmpty()
 	            || email == null || email.trim().isEmpty()
 	            || password == null || password.trim().isEmpty()) {
 
-	        response.getWriter().println("All fields are required.");
+	        response.sendRedirect(
+	                request.getContextPath()
+	                        + "/register.jsp?error=required"
+	        );
+
 	        return;
 	    }
 
-	   String hashedPassword = PasswordUtil.hashPassword(password);  
-	   
-	   User user = new User();
+	    String hashedPassword = PasswordUtil.hashPassword(password);
 
-	   user.setFullName(fullName);
-	   user.setEmail(email);
-	   user.setPasswordHash(hashedPassword);
-	   
-	   boolean registered = userService.registerUser(user);
+	    User user = new User();
 
-	   if (registered) {
-	       response.getWriter().println("Registration successful!");
-	   } else {
-	       response.getWriter().println("Registration failed.");
-	   }
-	    
+	    user.setFullName(fullName);
+	    user.setEmail(email);
+	    user.setPasswordHash(hashedPassword);
+
+	    boolean registered = userService.registerUser(user);
+
+	    if (registered) {
+
+	        response.sendRedirect(
+	                request.getContextPath()
+	                        + "/login.jsp?success=registered"
+	        );
+
+	    } else {
+
+	        response.sendRedirect(
+	                request.getContextPath()
+	                        + "/register.jsp?error=failed"
+	        );
+	    }
+
 	    System.out.println("Registration request received");
 	    System.out.println("Full Name: " + fullName);
 	    System.out.println("Email: " + email);
 	}
-
 }

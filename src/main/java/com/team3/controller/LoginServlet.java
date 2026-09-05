@@ -12,8 +12,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import com.team3.dao.RememberTokenDAO;
+import com.team3.dao.SessionDAO;
 import com.team3.entities.RememberToken;
 import com.team3.entities.User;
+import com.team3.entities.UserSession;
 import com.team3.service.AuthenticationService;
 import com.team3.util.TokenUtil;
 
@@ -27,6 +29,9 @@ public class LoginServlet extends HttpServlet {
 
     private RememberTokenDAO rememberTokenDAO =
             new RememberTokenDAO();
+
+    private SessionDAO sessionDAO =
+            new SessionDAO();
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
@@ -47,76 +52,129 @@ public class LoginServlet extends HttpServlet {
         boolean rememberMe =
                 "true".equals(request.getParameter("rememberMe"));
 
+        // Validate input
         if (email == null || email.trim().isEmpty()
                 || password == null || password.trim().isEmpty()) {
 
-            response.getWriter()
-                    .println("Email and password are required.");
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/login.jsp?error=required"
+            );
 
             return;
         }
 
-        User user = authenticationService.login(email, password);
+        // Authenticate user
+        User user =
+                authenticationService.login(email, password);
 
         if (user != null) {
 
             // Create HTTP session
-            HttpSession session = request.getSession();
+            HttpSession session =
+                    request.getSession();
 
             // Store logged-in user in session
             session.setAttribute("user", user);
 
+            // Session expires after 30 minutes
+            LocalDateTime loginTime =
+                    LocalDateTime.now();
+
+            LocalDateTime expiryTime =
+                    loginTime.plusMinutes(30);
+
+            // Save session information in USER_SESSION table
+            UserSession userSession =
+                    new UserSession();
+
+            userSession.setSessionId(
+                    session.getId()
+            );
+
+            userSession.setLoginTime(
+                    loginTime
+            );
+
+            userSession.setExpiryTime(
+                    expiryTime
+            );
+
+            userSession.setUserId(
+                    user.getUserId()
+            );
+
+            sessionDAO.saveSession(userSession);
+
             // Remember Me
             if (rememberMe) {
 
-                // Generate secure random token
-                String tokenValue = TokenUtil.generateToken();
+                String tokenValue =
+                        TokenUtil.generateToken();
 
-                // Create RememberToken object
-                RememberToken token = new RememberToken();
+                RememberToken token =
+                        new RememberToken();
 
-                token.setTokenValue(tokenValue);
-                token.setUserId(user.getUserId());
-
-                // Token expires after 30 days
-                token.setExpiresAt(
-                        LocalDateTime.now().plusDays(30)
+                token.setTokenValue(
+                        tokenValue
                 );
 
-                // Save token in database
+                token.setUserId(
+                        user.getUserId()
+                );
+
+                token.setExpiresAt(
+                        LocalDateTime.now()
+                                .plusDays(30)
+                );
+
                 rememberTokenDAO.saveToken(token);
 
-                // Create Remember Me cookie
                 Cookie rememberCookie =
-                        new Cookie("rememberMe", tokenValue);
+                        new Cookie(
+                                "rememberMe",
+                                tokenValue
+                        );
 
-                // Prevent JavaScript from accessing the cookie
+                // Prevent JavaScript from accessing cookie
                 rememberCookie.setHttpOnly(true);
 
-                // Cookie lasts for 30 days
+                // Cookie remains for 30 days
                 rememberCookie.setMaxAge(
                         30 * 24 * 60 * 60
                 );
 
-                // Apply cookie to this application
+                // Make cookie available to the application
                 rememberCookie.setPath(
                         request.getContextPath()
                 );
 
-                // Send cookie to browser
-                response.addCookie(rememberCookie);
+                response.addCookie(
+                        rememberCookie
+                );
             }
 
-            // Redirect to dashboard
-            response.sendRedirect("dashboard.jsp");
+            // Login successful
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/dashboard.jsp"
+            );
 
         } else {
 
-            response.getWriter()
-                    .println("Invalid email or password.");
+            // Login failed
+            response.sendRedirect(
+                    request.getContextPath()
+                            + "/login.jsp?error=invalid"
+            );
         }
 
-        System.out.println("Login request received");
-        System.out.println("Email: " + email);
+        System.out.println(
+                "Login request received"
+        );
+
+        System.out.println(
+                "Email: " + email
+        );
     }
 }

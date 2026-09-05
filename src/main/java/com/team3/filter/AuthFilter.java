@@ -66,13 +66,13 @@ public class AuthFilter implements Filter {
                     RememberToken token =
                             rememberTokenDAO.findToken(tokenValue);
 
-                    // Check whether token exists and is not expired
+                    // Check token validity
                     if (token != null
                             && token.getExpiresAt() != null
                             && token.getExpiresAt()
                                     .isAfter(LocalDateTime.now())) {
 
-                        // Find user using the user ID stored in token
+                        // Find user using token's user ID
                         User user =
                                 userService.getUserById(
                                         token.getUserId()
@@ -101,6 +101,20 @@ public class AuthFilter implements Filter {
                     }
 
                     // Invalid or expired token
+                    rememberTokenDAO.deleteToken(tokenValue);
+
+                    // Delete invalid cookie
+                    Cookie deleteCookie =
+                            new Cookie("rememberMe", "");
+
+                    deleteCookie.setHttpOnly(true);
+                    deleteCookie.setMaxAge(0);
+                    deleteCookie.setPath(
+                            httpRequest.getContextPath()
+                    );
+
+                    httpResponse.addCookie(deleteCookie);
+
                     break;
                 }
             }
