@@ -93,4 +93,27 @@ public class RememberTokenDAO {
 	        return false;
 	    }
 }
+	// Delete all remember tokens for a user
+	// Used when Admin deletes a user
+	public boolean deleteTokensByUserId(long userId) {
+
+	    String sql =
+	            "DELETE FROM remember_token WHERE user_id = ?";
+
+	    try (Connection connection = DBConnection.getConnection();
+	         PreparedStatement statement =
+	                 connection.prepareStatement(sql)) {
+
+	        statement.setLong(1, userId);
+
+	        statement.executeUpdate();
+
+	        return true;
+
+	    } catch (SQLException e) {
+
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
 }

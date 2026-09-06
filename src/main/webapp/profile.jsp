@@ -3,217 +3,420 @@
 
 <%@ page import="com.team3.entities.User" %>
 
+<%
+    User user = (User) request.getAttribute("user");
+
+    String success =
+            request.getParameter("success");
+
+    String error =
+            request.getParameter("error");
+%>
+
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>My Profile | User Portal</title>
 
-    <style>
+<meta charset="UTF-8">
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
-        }
+<title>My Profile</title>
 
-        body {
-            min-height: 100vh;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            padding: 40px 20px;
-        }
+<style>
 
-        .profile-container {
-            width: 500px;
-            max-width: 100%;
-            margin: 40px auto;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-        }
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
 
-        .profile-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
-            background: #667eea;
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 32px;
-            font-weight: bold;
-        }
+    body {
+        background: #f4f6f9;
+        min-height: 100vh;
+    }
 
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-        }
+    .navbar {
+        background: #1f2937;
+        color: white;
+        padding: 18px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        .subtitle {
-            text-align: center;
-            color: #777;
-            margin-bottom: 30px;
-        }
+    .navbar h2 {
+        font-size: 22px;
+    }
 
-        .profile-card {
-            background: #f7f8fc;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
+    .nav-links a {
+        text-decoration: none;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 6px;
+        margin-left: 8px;
+    }
 
-        .profile-row {
-            padding: 15px 0;
-            border-bottom: 1px solid #ddd;
-        }
+    .dashboard {
+        background: #2563eb;
+    }
 
-        .profile-row:last-child {
-            border-bottom: none;
-        }
+    .logout {
+        background: #dc2626;
+    }
 
-        .profile-label {
-            display: block;
-            color: #777;
-            font-size: 13px;
-            margin-bottom: 5px;
-        }
+    .container {
+        max-width: 700px;
+        margin: 50px auto;
+        padding: 0 25px;
+    }
 
-        .profile-value {
-            color: #333;
-            font-size: 16px;
-            font-weight: bold;
-        }
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 35px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
 
-        .button-row {
-            display: flex;
-            gap: 12px;
-        }
+    .card h1 {
+        color: #111827;
+        margin-bottom: 8px;
+    }
 
-        .back-button,
-        .logout-button {
-            flex: 1;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
-        }
+    .card-description {
+        color: #6b7280;
+        margin-bottom: 30px;
+    }
 
-        .back-button {
-            background: #667eea;
-            color: white;
-            text-decoration: none;
-        }
+    .message {
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
 
-        .back-button:hover {
-            background: #5568d9;
-        }
+    .success {
+        background: #dcfce7;
+        color: #166534;
+    }
 
-        .logout-button {
-            border: none;
-            background: #e74c3c;
-            color: white;
-        }
+    .error {
+        background: #fee2e2;
+        color: #991b1b;
+    }
 
-        .logout-button:hover {
-            background: #c0392b;
-        }
+    .form-group {
+        margin-bottom: 20px;
+    }
 
-    </style>
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #374151;
+        font-weight: bold;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 15px;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #2563eb;
+    }
+
+    .update-btn {
+        width: 100%;
+        padding: 13px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+
+    .update-btn:hover {
+        background: #1d4ed8;
+    }
+
+    .security-section {
+        margin-top: 30px;
+        padding-top: 25px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .security-section h2 {
+        color: #111827;
+        margin-bottom: 8px;
+        font-size: 20px;
+    }
+
+    .security-section p {
+        color: #6b7280;
+        margin-bottom: 20px;
+    }
+
+    .password-form {
+        margin-top: 20px;
+    }
+
+    .password-btn {
+        width: 100%;
+        padding: 13px;
+        background: #6b7280;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 15px;
+        cursor: pointer;
+    }
+
+    .password-btn:hover {
+        background: #4b5563;
+    }
+
+</style>
+
 </head>
 
 <body>
 
-<%
-    User user = (User) request.getAttribute("user");
+    <div class="navbar">
 
-    if (user == null) {
-        response.sendRedirect(
-            request.getContextPath() + "/login.jsp"
-        );
-        return;
-    }
-%>
+        <h2>My Profile</h2>
 
-    <div class="profile-container">
+        <div class="nav-links">
 
-        <div class="profile-icon">
-            <%= user.getFullName().substring(0, 1).toUpperCase() %>
-        </div>
-
-        <h1>My Profile</h1>
-
-        <p class="subtitle">
-            Your account information
-        </p>
-
-        <div class="profile-card">
-
-            <div class="profile-row">
-
-                <span class="profile-label">
-                    Full Name
-                </span>
-
-                <span class="profile-value">
-                    <%= user.getFullName() %>
-                </span>
-
-            </div>
-
-            <div class="profile-row">
-
-                <span class="profile-label">
-                    Email Address
-                </span>
-
-                <span class="profile-value">
-                    <%= user.getEmail() %>
-                </span>
-
-            </div>
-
-            <div class="profile-row">
-
-                <span class="profile-label">
-                    User ID
-                </span>
-
-                <span class="profile-value">
-                    <%= user.getUserId() %>
-                </span>
-
-            </div>
-
-        </div>
-
-        <div class="button-row">
-
-            <a class="back-button"
-               href="<%= request.getContextPath() %>/dashboard.jsp">
+            <a href="${pageContext.request.contextPath}/dashboard.jsp"
+               class="dashboard">
                 Dashboard
             </a>
 
-            <form action="<%= request.getContextPath() %>/LogoutServlet"
-                  method="post"
-                  style="flex: 1;">
+            <a href="${pageContext.request.contextPath}/LogoutServlet"
+               class="logout">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="container">
+
+        <div class="card">
+
+            <h1>Profile Information</h1>
+
+            <p class="card-description">
+                Update your personal information below.
+            </p>
+
+
+            <!-- SUCCESS MESSAGES -->
+
+            <% if ("updated".equals(success)) { %>
+
+                <div class="message success">
+                    Profile updated successfully.
+                </div>
+
+            <% } %>
+
+
+            <% if ("passwordChanged".equals(success)) { %>
+
+                <div class="message success">
+                    Password changed successfully.
+                </div>
+
+            <% } %>
+
+
+            <!-- PROFILE ERRORS -->
+
+            <% if ("required".equals(error)) { %>
+
+                <div class="message error">
+                    Full Name and Email are required.
+                </div>
+
+            <% } %>
+
+
+            <% if ("failed".equals(error)) { %>
+
+                <div class="message error">
+                    Profile update failed. Please try again.
+                </div>
+
+            <% } %>
+
+
+            <!-- PASSWORD ERRORS -->
+
+            <% if ("passwordRequired".equals(error)) { %>
+
+                <div class="message error">
+                    All password fields are required.
+                </div>
+
+            <% } %>
+
+
+            <% if ("passwordMismatch".equals(error)) { %>
+
+                <div class="message error">
+                    New password and confirm password do not match.
+                </div>
+
+            <% } %>
+
+
+            <% if ("passwordInvalid".equals(error)) { %>
+
+                <div class="message error">
+                    Current password is incorrect.
+                </div>
+
+            <% } %>
+
+
+            <!-- PROFILE UPDATE FORM -->
+
+            <form action="${pageContext.request.contextPath}/ProfileServlet"
+                  method="post">
+
+                <div class="form-group">
+
+                    <label for="fullName">
+                        Full Name
+                    </label>
+
+                    <input type="text"
+                           id="fullName"
+                           name="fullName"
+                           value="<%= user != null
+                                   ? user.getFullName()
+                                   : "" %>"
+                           required>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Email
+                    </label>
+
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           value="<%= user != null
+                                   ? user.getEmail()
+                                   : "" %>"
+                           required>
+
+                </div>
+
 
                 <button type="submit"
-                        class="logout-button">
-                    Logout
+                        class="update-btn">
+
+                    Update Profile
+
                 </button>
 
             </form>
+
+
+            <!-- CHANGE PASSWORD -->
+
+            <div class="security-section">
+
+                <h2>Password Security</h2>
+
+                <p>
+                    Change your password by entering your
+                    current password and a new password.
+                </p>
+
+
+                <form action="${pageContext.request.contextPath}/ProfileServlet"
+                      method="post"
+                      class="password-form">
+
+                    <input type="hidden"
+                           name="action"
+                           value="changePassword">
+
+
+                    <div class="form-group">
+
+                        <label for="currentPassword">
+                            Current Password
+                        </label>
+
+                        <input type="password"
+                               id="currentPassword"
+                               name="currentPassword"
+                               required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="newPassword">
+                            New Password
+                        </label>
+
+                        <input type="password"
+                               id="newPassword"
+                               name="newPassword"
+                               minlength="6"
+                               required>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="confirmPassword">
+                            Confirm New Password
+                        </label>
+
+                        <input type="password"
+                               id="confirmPassword"
+                               name="confirmPassword"
+                               minlength="6"
+                               required>
+
+                    </div>
+
+
+                    <button type="submit"
+                            class="password-btn">
+
+                        Change Password
+
+                    </button>
+
+                </form>
+
+            </div>
 
         </div>
 
     </div>
 
 </body>
+
 </html>

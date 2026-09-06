@@ -154,11 +154,23 @@ public class LoginServlet extends HttpServlet {
                 );
             }
 
-            // Login successful
-            response.sendRedirect(
-                    request.getContextPath()
-                            + "/dashboard.jsp"
-            );
+            // Role-based login routing
+            if ("ADMIN".equalsIgnoreCase(user.getRole())) {
+
+                // Admin goes to Admin Dashboard
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/admin-dashboard.jsp"
+                );
+
+            } else {
+
+                // Normal user goes to User Dashboard
+                response.sendRedirect(
+                        request.getContextPath()
+                                + "/dashboard.jsp"
+                );
+            }
 
         } else {
 

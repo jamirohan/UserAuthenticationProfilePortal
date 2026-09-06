@@ -5,127 +5,407 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.team3.entities.User;
 import com.team3.util.DBConnection;
 
 public class UserDAO {
-	
-//	registerUser(User user) → Used to save/register a new user in the database.
-	public boolean registerUser(User user) {
 
-	    String sql = "INSERT INTO users (email, password_hash, full_name) VALUES (?, ?, ?)";
+    // Register a new user
+    public boolean registerUser(User user) {
 
-	    try (Connection connection = DBConnection.getConnection();
-	         PreparedStatement statement = connection.prepareStatement(sql)) {
+        String sql = "INSERT INTO users "
+                   + "(email, password_hash, full_name, role) "
+                   + "VALUES (?, ?, ?, ?)";
 
-	        statement.setString(1, user.getEmail());
-	        statement.setString(2, user.getPasswordHash());
-	        statement.setString(3, user.getFullName());
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
 
-	        int rowsInserted = statement.executeUpdate();
+            statement.setString(1, user.getEmail());
+            statement.setString(2, user.getPasswordHash());
+            statement.setString(3, user.getFullName());
 
-	        return rowsInserted > 0;
+            // All users registering through the portal
+            // are normal users.
+            statement.setString(4, "USER");
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    }
-	}
-	
-	
-	
-//	findUserByEmail(String email) → Used to find a user by email during login.
-	public User findUserByEmail(String email) {
+            int rowsInserted =
+                    statement.executeUpdate();
 
-	    String sql = "SELECT user_id, email, password_hash, full_name, created_at "
-	               + "FROM users WHERE email = ?";
+            return rowsInserted > 0;
 
-	    try (Connection connection = DBConnection.getConnection();
-	         PreparedStatement statement = connection.prepareStatement(sql)) {
+        } catch (SQLException e) {
 
-	        statement.setString(1, email);
-
-	        ResultSet resultSet = statement.executeQuery();
-
-	        if (resultSet.next()) {
-
-	            User user = new User();
-
-	            user.setUserId(resultSet.getLong("user_id"));
-	            user.setEmail(resultSet.getString("email"));
-	            user.setPasswordHash(resultSet.getString("password_hash"));
-	            user.setFullName(resultSet.getString("full_name"));
-
-	            Timestamp timestamp = resultSet.getTimestamp("created_at");
-
-	            if (timestamp != null) {
-	                user.setCreatedAt(timestamp.toLocalDateTime());
-	            }
-
-	            return user;
-	        }
-
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-
-	    return null;
-	}
-	    
-	    
-//	findUserById(long userId) → Used to retrieve a specific user's details using their ID
-	public User findUserById(long userId) {
-
-	    String sql = "SELECT user_id, email, password_hash, full_name, created_at "
-	               + "FROM users WHERE user_id = ?";
-
-	    try (Connection connection = DBConnection.getConnection();
-	         PreparedStatement statement = connection.prepareStatement(sql)) {
-
-	        statement.setLong(1, userId);
-
-	        ResultSet resultSet = statement.executeQuery();
-
-	        if (resultSet.next()) {
-
-	            User user = new User();
-
-	            user.setUserId(resultSet.getLong("user_id"));
-	            user.setEmail(resultSet.getString("email"));
-	            user.setPasswordHash(resultSet.getString("password_hash"));
-	            user.setFullName(resultSet.getString("full_name"));
-
-	            Timestamp timestamp = resultSet.getTimestamp("created_at");
-
-	            if (timestamp != null) {
-	                user.setCreatedAt(timestamp.toLocalDateTime());
-	            }
-
-	            return user;
-	        }
-
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-
-	    return null;
-	}
-	
-	    
-	    
-	    
-	    
-	    
-	    
-	    
-/*   DAO -> DATA ACCESS OBJECT   
+            e.printStackTrace();
+            return false;
+        }
+    }
 
 
-.*/	    
-	    
-	    
-	    
-/*	    Why are we returning false and null?
-	    		Because we haven't implemented JDBC yet.	    */
+    // Find user by email
+    public User findUserByEmail(String email) {
+
+        String sql = "SELECT user_id, email, password_hash, "
+                   + "full_name, role, created_at "
+                   + "FROM users WHERE email = ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setString(1, email);
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
+            if (resultSet.next()) {
+
+                User user = new User();
+
+                user.setUserId(
+                        resultSet.getLong("user_id")
+                );
+
+                user.setEmail(
+                        resultSet.getString("email")
+                );
+
+                user.setPasswordHash(
+                        resultSet.getString("password_hash")
+                );
+
+                user.setFullName(
+                        resultSet.getString("full_name")
+                );
+
+                user.setRole(
+                        resultSet.getString("role")
+                );
+
+                Timestamp createdAt =
+                        resultSet.getTimestamp("created_at");
+
+                if (createdAt != null) {
+
+                    user.setCreatedAt(
+                            createdAt.toLocalDateTime()
+                    );
+                }
+
+                return user;
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    // Find user by ID
+    public User findUserById(long userId) {
+
+        String sql = "SELECT user_id, email, password_hash, "
+                   + "full_name, role, created_at "
+                   + "FROM users WHERE user_id = ?";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            statement.setLong(1, userId);
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
+            if (resultSet.next()) {
+
+                User user = new User();
+
+                user.setUserId(
+                        resultSet.getLong("user_id")
+                );
+
+                user.setEmail(
+                        resultSet.getString("email")
+                );
+
+                user.setPasswordHash(
+                        resultSet.getString("password_hash")
+                );
+
+                user.setFullName(
+                        resultSet.getString("full_name")
+                );
+
+                user.setRole(
+                        resultSet.getString("role")
+                );
+
+                Timestamp createdAt =
+                        resultSet.getTimestamp("created_at");
+
+                if (createdAt != null) {
+
+                    user.setCreatedAt(
+                            createdAt.toLocalDateTime()
+                    );
+                }
+
+                return user;
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    // Find all users
+    // Used by Admin module
+    public List<User> findAllUsers() {
+
+        List<User> users =
+                new ArrayList<>();
+
+        String sql = "SELECT user_id, email, password_hash, "
+                   + "full_name, role, created_at "
+                   + "FROM users "
+                   + "ORDER BY user_id";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql);
+             ResultSet resultSet =
+                     statement.executeQuery()) {
+
+            while (resultSet.next()) {
+
+                User user = new User();
+
+                user.setUserId(
+                        resultSet.getLong("user_id")
+                );
+
+                user.setEmail(
+                        resultSet.getString("email")
+                );
+
+                user.setPasswordHash(
+                        resultSet.getString("password_hash")
+                );
+
+                user.setFullName(
+                        resultSet.getString("full_name")
+                );
+
+                user.setRole(
+                        resultSet.getString("role")
+                );
+
+                Timestamp createdAt =
+                        resultSet.getTimestamp("created_at");
+
+                if (createdAt != null) {
+
+                    user.setCreatedAt(
+                            createdAt.toLocalDateTime()
+                    );
+                }
+
+                users.add(user);
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+
+
+    // Search users by full name or email
+    // Used by Admin module
+    public List<User> searchUsers(String search) {
+
+        List<User> users =
+                new ArrayList<>();
+
+        String sql = "SELECT user_id, email, password_hash, "
+                   + "full_name, role, created_at "
+                   + "FROM users "
+                   + "WHERE LOWER(full_name) LIKE LOWER(?) "
+                   + "OR LOWER(email) LIKE LOWER(?) "
+                   + "ORDER BY user_id";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement =
+                     connection.prepareStatement(sql)) {
+
+            String searchPattern =
+                    "%" + search + "%";
+
+            statement.setString(
+                    1,
+                    searchPattern
+            );
+
+            statement.setString(
+                    2,
+                    searchPattern
+            );
+
+            ResultSet resultSet =
+                    statement.executeQuery();
+
+            while (resultSet.next()) {
+
+                User user = new User();
+
+                user.setUserId(
+                        resultSet.getLong("user_id")
+                );
+
+                user.setEmail(
+                        resultSet.getString("email")
+                );
+
+                user.setPasswordHash(
+                        resultSet.getString("password_hash")
+                );
+
+                user.setFullName(
+                        resultSet.getString("full_name")
+                );
+
+                user.setRole(
+                        resultSet.getString("role")
+                );
+
+                Timestamp createdAt =
+                        resultSet.getTimestamp("created_at");
+
+                if (createdAt != null) {
+
+                    user.setCreatedAt(
+                            createdAt.toLocalDateTime()
+                    );
+                }
+
+                users.add(user);
+            }
+
+        } catch (SQLException e) {
+
+            e.printStackTrace();
+        }
+
+        return users;
+    }
+ // Delete user
+ // Used by Admin module
+ public boolean deleteUser(long userId) {
+
+     String sql = "DELETE FROM users WHERE user_id = ?";
+
+     try (Connection connection = DBConnection.getConnection();
+          PreparedStatement statement =
+                  connection.prepareStatement(sql)) {
+
+         statement.setLong(1, userId);
+
+         int rowsDeleted =
+                 statement.executeUpdate();
+
+         return rowsDeleted > 0;
+
+     } catch (SQLException e) {
+
+         e.printStackTrace();
+         return false;
+     }
+ }
+ 
+//Update user's full name and email
+//Used by Profile module
+public boolean updateUser(User user) {
+
+  String sql =
+          "UPDATE users "
+        + "SET full_name = ?, email = ? "
+        + "WHERE user_id = ?";
+
+  try (Connection connection = DBConnection.getConnection();
+       PreparedStatement statement =
+               connection.prepareStatement(sql)) {
+
+      statement.setString(
+              1,
+              user.getFullName()
+      );
+
+      statement.setString(
+              2,
+              user.getEmail()
+      );
+
+      statement.setLong(
+              3,
+              user.getUserId()
+      );
+
+      int rowsUpdated =
+              statement.executeUpdate();
+
+      return rowsUpdated > 0;
+
+  } catch (SQLException e) {
+
+      e.printStackTrace();
+      return false;
+  }
+}
+//Update user's password
+//Used by Profile module
+public boolean updatePassword(long userId, String passwordHash) {
+
+ String sql =
+         "UPDATE users "
+       + "SET password_hash = ? "
+       + "WHERE user_id = ?";
+
+ try (Connection connection = DBConnection.getConnection();
+      PreparedStatement statement =
+              connection.prepareStatement(sql)) {
+
+     statement.setString(
+             1,
+             passwordHash
+     );
+
+     statement.setLong(
+             2,
+             userId
+     );
+
+     int rowsUpdated =
+             statement.executeUpdate();
+
+     return rowsUpdated > 0;
+
+ } catch (SQLException e) {
+
+     e.printStackTrace();
+     return false;
+ }
+}
 }
